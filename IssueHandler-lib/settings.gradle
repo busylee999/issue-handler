@@ -1,1 +1,1 @@
-include ':issueHandler'
+include ':issueHandler', ':TestApp'

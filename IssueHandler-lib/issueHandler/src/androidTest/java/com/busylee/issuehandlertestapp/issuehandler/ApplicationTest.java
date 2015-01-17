@@ -1,4 +1,4 @@
-package com.busylee.issuehandler.issuehandler;
+package com.busylee.issuehandlertestapp.issuehandler;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
