@@ -1,0 +1,10 @@
+<resources>
+    <string name="issuebot_not_installed_dialog_message">This application uses IssueBot for posting issues to bag trackers</string>
+    <string name="issuebot_not_installed_dialog_positive_button">Install</string>
+    <string name="issuebot_not_installed_dialog_negative_button">Cancel</string>
+
+    <string name="issue_dialog_title">Ooops.....</string>
+    <string name="issue_dialog_message">Application crashed. Do you want to create new issue for developers?</string>
+    <string name="issue_dialog_positive_button">Create Issue</string>
+    <string name="issue_dialog_negative_button">Cancel</string>
+</resources>

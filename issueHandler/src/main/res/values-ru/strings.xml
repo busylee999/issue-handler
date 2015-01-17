@@ -1,0 +1,10 @@
+<resources>
+    <string name="issuebot_not_installed_dialog_message">Это приложение использует IssueBot для создания задач в Bug трекере</string>
+    <string name="issuebot_not_installed_dialog_positive_button">Установить</string>
+    <string name="issuebot_not_installed_dialog_negative_button">Отмена</string>
+
+    <string name="issue_dialog_title">Ой.....</string>
+    <string name="issue_dialog_message">Приложение остановлено. Вы хотите завести новую задачу для разработчиков?</string>
+    <string name="issue_dialog_positive_button">Создать задачу</string>
+    <string name="issue_dialog_negative_button">Отмена</string>
+</resources>
