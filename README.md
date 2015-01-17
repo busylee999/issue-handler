@@ -1,6 +1,8 @@
 # Review
 Android Library for handling uncaught exceptions and sending it to installed IssueBot program for posing to bug-trackers. The challenge of using this library it is simplify to store bug issues of your developing Android projects 
 
+Note: yet this is beta version.
+
 Features:
 
 1. Handling uncaugth exceptions and posting it to preinstalled IssueBot Android Application on phone your app running for posting it to bug-tracker system IssueBot supports.
@@ -41,5 +43,6 @@ Simple download latest version of aar file from aar-files directory of this repo
 
 
 
-## Report preview:
 
+## Report preview:
+coming soon...
