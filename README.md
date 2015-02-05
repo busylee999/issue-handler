@@ -43,7 +43,7 @@ And add dependency:
     ...
     dependency {
     ...
-    compile 'com.busylee.issuehandler:issuehandler:1.0.4'
+    compile 'com.busylee.issuehandler:issuehandler:1.0.6'
     ...
     }
     ...
@@ -65,4 +65,4 @@ It has two different variants, using filePath or not.
 
 ## Latest version
 
-This is now just beta version. Latest version in mvn repo is 1.0.4.
+This is now just beta version. Latest version in mvn repo is 1.0.6.
