@@ -64,6 +64,10 @@ It has two different variants, using filePath or not.
 
 Note: If you want to attach file for issue you need to specify file permissions as readable for everybody especially if you created it in application own directory.
 
+And in base activity class add callback method in onCreate()
+    
+    IssueHandler.onActivityCreate(this);
+
 ## Latest version
 
 This is now just beta version. Latest version in mvn repo is 1.0.6.
