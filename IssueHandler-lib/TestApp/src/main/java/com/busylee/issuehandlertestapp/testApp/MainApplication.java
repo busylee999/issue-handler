@@ -3,7 +3,7 @@ package com.busylee.issuehandlertestapp.testApp;
 import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
-import com.busylee.issuehandler.CIssueHandler;
+import com.busylee.issuehandler.IssueHandler;
 
 import java.io.*;
 
@@ -17,7 +17,7 @@ public class MainApplication extends Application {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		CIssueHandler.init(TEST_REDMINE_SERVER_URL, getFilePath());
+		IssueHandler.init(TEST_REDMINE_SERVER_URL, getFilePath());
 
 		modifyFileWeNeedTobeAttached();
 	}

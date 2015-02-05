@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import com.busylee.issuehandler.CIssueHandler;
+import com.busylee.issuehandler.IssueHandler;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,7 +12,7 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		CIssueHandler.onActivityCreate(this);
+		IssueHandler.onActivityCreate(this);
 
 		setContentView(R.layout.a_main_activity);
 
