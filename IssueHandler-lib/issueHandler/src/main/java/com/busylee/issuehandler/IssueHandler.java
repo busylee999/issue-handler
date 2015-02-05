@@ -14,7 +14,7 @@ import android.os.Looper;
 /**
  * Created by busylee on 23.10.14.
  */
-public class CIssueHandler implements Thread.UncaughtExceptionHandler{
+public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
     private static final String ISSUE_BOT_PACKAGE_NAME = "com.busylee.issuebot";
     private static final String FILTER_ACTION = "com.busylee.issuebot.redmine.issue";
@@ -26,7 +26,7 @@ public class CIssueHandler implements Thread.UncaughtExceptionHandler{
     private String mServerUrl;
     private String mFileUrl;
     private boolean mIgnoreDebugMode = false;
-    private static CIssueHandler INSTANCE = new CIssueHandler();
+    private static IssueHandler INSTANCE = new IssueHandler();
 
     public static void init(String serverUrl) {
         INSTANCE.setServerUrl(serverUrl);
@@ -61,7 +61,7 @@ public class CIssueHandler implements Thread.UncaughtExceptionHandler{
 
             INSTANCE.setActivity(activity);
 
-            if (Thread.getDefaultUncaughtExceptionHandler() instanceof CIssueHandler)
+            if (Thread.getDefaultUncaughtExceptionHandler() instanceof IssueHandler)
                 return;
 
             Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
