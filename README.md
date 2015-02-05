@@ -1,5 +1,5 @@
 # Review
-Android Library for handling uncaught exceptions and sending it to installed IssueBot program for posing to bug-trackers. The challenge of using this library it is simplify to store bug issues of your developing Android projects 
+Android Library for handling uncaught exceptions and sending it to installed IssueBot (https://play.google.com/store/apps/details?id=com.busylee.issuebot) program for posing to bug-trackers. The challenge of using this library it is simplify to store bug issues of your developing Android projects 
 
 Note: yet this is beta version.
 
@@ -12,12 +12,18 @@ Features:
 
 ## Quick start
 
+1. Add dependency for you project.
+2. Add init code in Application.
+3. Specify server url and file path
+4. Add callback in onCreate method for your base Activity class.
+
+You can look for sample project.
 
 ### Adding dependency for project:
 
 Using gradle:
 
-Add external repository in build.gragle file in your gradle module folder:
+Add external repository in build.gragle file in your gradle module folder uses this lib or edit build.gradle file for all project:
 
     ...
     apply plugin: 'com.android.application'
@@ -33,6 +39,15 @@ Add external repository in build.gragle file in your gradle module folder:
     ...
     
 
+And add dependency:
+    ...
+    dependency {
+    ...
+    compile 'com.busylee.issuehandler:issuehandler:1.0.6'
+    ...
+    }
+    ...
+
 This is preffered approach. But it is suitable only if you have internet connection.
 
 Using arr file:
@@ -40,9 +55,14 @@ Using arr file:
 Simple download latest version of aar file from aar-files directory of this repository and add it as dependency for your project.
 
 ### Using in project:
+In your custom application class add IssueHandler init.
+
+It has two different variants, using filePath or not.
+
+    IssueHandler.init("your/redmine/server/path");
+    IssueHandler.init("your/redmine/server/path", "path/to/file/be/attached");
 
 
+## Latest version
 
-
-## Report preview:
-coming soon...
+This is now just beta version. Latest version in mvn repo is 1.0.6.
