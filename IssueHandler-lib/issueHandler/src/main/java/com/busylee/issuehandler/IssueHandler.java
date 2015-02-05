@@ -54,10 +54,6 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
     public static void onActivityCreate(Activity activity) {
         if(isApplicationDebugable(activity) || INSTANCE.mIgnoreDebugMode) {
-            if(!isIssueBotInstalled(activity)) {
-                showIssueBotInstallDialog(activity);
-                return;
-            }
 
             INSTANCE.setActivity(activity);
 
@@ -65,6 +61,11 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
                 return;
 
             Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
+
+			if(!isIssueBotInstalled(activity)) {
+				showIssueBotInstallDialog(activity);
+				return;
+			}
         }
     }
 
@@ -74,38 +75,43 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
     @Override
     public void uncaughtException(Thread thread, final Throwable throwable) {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+
 
         (new Thread(new Runnable() {
             @Override
             public void run() {
                 Looper.prepare();
 
-                builder.setTitle(R.string.issue_dialog_title);
-                builder.setMessage(R.string.issue_dialog_message);
-                builder.create();
-                builder.setPositiveButton(R.string.issue_dialog_positive_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent intent = new Intent(FILTER_ACTION);
-                        intent.putExtra(EXTRA_SERVER_URL, mServerUrl);
-                        intent.putExtra(EXTRA_THROWABLE, throwable);
-                        if(mFileUrl != null)
-                            intent.putExtra(EXTRA_FILE_PATH, mFileUrl);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        mActivity.startActivity(intent);
-                        mActivity.moveTaskToBack(true);
-                        System.exit(0);
-                    }
-                });
-                builder.setNegativeButton(R.string.issue_dialog_negative_button, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        mActivity.moveTaskToBack(true);
-                        System.exit(0);
-                    }
-                });
-                builder.show();
+				if(!isIssueBotInstalled(mActivity)) {
+					showIssueBotInstallDialog(mActivity);
+				} else {
+					AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+					builder.setTitle(R.string.issue_dialog_title);
+					builder.setMessage(R.string.issue_dialog_message);
+					builder.create();
+					builder.setPositiveButton(R.string.issue_dialog_positive_button, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							Intent intent = new Intent(FILTER_ACTION);
+							intent.putExtra(EXTRA_SERVER_URL, mServerUrl);
+							intent.putExtra(EXTRA_THROWABLE, throwable);
+							if(mFileUrl != null)
+								intent.putExtra(EXTRA_FILE_PATH, mFileUrl);
+							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+							mActivity.startActivity(intent);
+							mActivity.moveTaskToBack(true);
+							System.exit(0);
+						}
+					});
+					builder.setNegativeButton(R.string.issue_dialog_negative_button, new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i) {
+							mActivity.moveTaskToBack(true);
+							System.exit(0);
+						}
+					});
+					builder.show();
+				}
 
                 Looper.loop();
             }
