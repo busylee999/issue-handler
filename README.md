@@ -62,6 +62,7 @@ It has two different variants, using filePath or not.
     IssueHandler.init("your/redmine/server/path");
     IssueHandler.init("your/redmine/server/path", "path/to/file/be/attached");
 
+Note: If you want to attach file for issue you need to specify file permissions as readable for everybody especially if you created it in application own directory.
 
 ## Latest version
 
