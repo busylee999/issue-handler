@@ -9,12 +9,6 @@ import com.busylee.issuehandler.CIssueHandler;
 
 public class MainActivity extends ActionBarActivity {
 
-	private static final String TAG = "TestActivity";
-	private static final String TEST_REDMINE_SERVER_URL = "https://www.hostedredmine.com";
-	static {
-		CIssueHandler.init(TEST_REDMINE_SERVER_URL);
-	}
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
