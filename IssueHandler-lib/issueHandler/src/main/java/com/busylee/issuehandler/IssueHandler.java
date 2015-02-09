@@ -41,7 +41,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
     }
 
     public static void onActivityCreate(Activity activity) {
-        if(isApplicationDebugable(activity) || INSTANCE.mIgnoreDebugMode) {
+        if(isApplicationDebuggable(activity) || INSTANCE.mIgnoreDebugMode) {
 
             INSTANCE.mActivity = activity;
 
@@ -57,7 +57,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
         }
     }
 
-    private static boolean isApplicationDebugable(Context context) {
+    private static boolean isApplicationDebuggable(Context context) {
         return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
