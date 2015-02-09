@@ -10,6 +10,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Looper;
+import android.text.TextUtils;
 
 /**
  * Created by busylee on 23.10.14.
@@ -83,7 +84,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
 							Intent intent = new Intent(FILTER_ACTION);
 							intent.putExtra(EXTRA_SERVER_URL, mServerUrl);
 							intent.putExtra(EXTRA_THROWABLE, throwable);
-							if(mFileUrl != null)
+							if(!TextUtils.isEmpty(mFileUrl))
 								intent.putExtra(EXTRA_FILE_PATH, mFileUrl);
 							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 							mActivity.startActivity(intent);
