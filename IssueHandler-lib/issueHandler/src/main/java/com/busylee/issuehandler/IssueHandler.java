@@ -29,33 +29,21 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
     private static IssueHandler INSTANCE = new IssueHandler();
 
     public static void init(String serverUrl) {
-        INSTANCE.setServerUrl(serverUrl);
+        INSTANCE.mServerUrl = serverUrl;
     }
 
     public static void init(String serverUrl, String fileUrl) {
-        init(serverUrl); INSTANCE.setFileUrl(fileUrl);
+        init(serverUrl); INSTANCE.mFileUrl = fileUrl;
     }
 
     public static void setIgnoreDebugMode(boolean ignoreDebugMode) {
         INSTANCE.mIgnoreDebugMode = ignoreDebugMode;
     }
 
-    private void setActivity(Activity activity) {
-        mActivity = activity;
-    }
-
-    private void setServerUrl(String serverUrl) {
-        mServerUrl = serverUrl;
-    }
-
-    private void setFileUrl(String fileUrl) {
-        mFileUrl = fileUrl;
-    }
-
     public static void onActivityCreate(Activity activity) {
         if(isApplicationDebugable(activity) || INSTANCE.mIgnoreDebugMode) {
 
-            INSTANCE.setActivity(activity);
+            INSTANCE.mActivity = activity;
 
             if (Thread.getDefaultUncaughtExceptionHandler() instanceof IssueHandler)
                 return;
