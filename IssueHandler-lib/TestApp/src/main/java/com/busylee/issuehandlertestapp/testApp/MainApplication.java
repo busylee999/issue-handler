@@ -4,20 +4,24 @@ import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
 import com.busylee.issuehandler.IssueHandler;
+import com.busylee.issuehandler.IssueHandlerSetup;
 
 import java.io.*;
 
 /**
  * Created by busylee on 05.02.15.
  */
+@IssueHandlerSetup(
+        serverUrl = "http://tryremember.ru:3000"
+)
 public class MainApplication extends Application {
-	private static final String TEST_REDMINE_SERVER_URL = "http://tryremember.ru:3000";
+
 	private static final String ATTACH_FILE_NAME = "/attach.txt";
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		IssueHandler.init(TEST_REDMINE_SERVER_URL, getFilePath());
+		IssueHandler.init(this, getFilePath());
 
 		modifyFileWeNeedTobeAttached();
 	}
