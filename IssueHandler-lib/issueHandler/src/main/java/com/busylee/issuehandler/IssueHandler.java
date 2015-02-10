@@ -67,9 +67,9 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
         if(!TextUtils.isEmpty(filePath)) {
             resultFilePath = filePath;
         } else {
-            String filePathSetup = issueHandlerSetup.serverUrl();
+            String filePathSetup = issueHandlerSetup.filePath();
             if(!TextUtils.isEmpty(filePathSetup))
-                resultFilePath = application.getFilesDir().getAbsolutePath() + filePath;
+                resultFilePath = application.getFilesDir().getAbsolutePath() + filePathSetup;
         }
 
         init(new IssueHandlerConfiguration(serverUrl, ignoreMode, resultFilePath));
