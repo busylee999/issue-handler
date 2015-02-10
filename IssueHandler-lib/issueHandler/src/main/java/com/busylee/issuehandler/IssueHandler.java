@@ -32,16 +32,6 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
     private Activity mActivity;
 
-    @Deprecated
-    public static void init(String serverUrl) {
-        CONFIGURATION.mServerUrl = serverUrl;
-    }
-
-    @Deprecated
-    public static void init(String serverUrl, String fileUrl) {
-        init(serverUrl); CONFIGURATION.mFileUrl = fileUrl;
-    }
-
     /**
      * Initialization of IssueHandler. It if Application class has no @IssueHandlerSetup
      * annotation, it logs appropriate error.
@@ -69,7 +59,20 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
                     "Issue handler missed annotation @IssueHandlerSetup");
             return;
         }
-        init(new IssueHandlerConfiguration(issueHandlerSetup, filePath));
+
+        final String serverUrl = issueHandlerSetup.serverUrl();
+        final boolean ignoreMode = issueHandlerSetup.ignoreMode();
+
+        String resultFilePath = null;
+        if(!TextUtils.isEmpty(filePath)) {
+            resultFilePath = filePath;
+        } else {
+            String filePathSetup = issueHandlerSetup.serverUrl();
+            if(!TextUtils.isEmpty(filePathSetup))
+                resultFilePath = application.getFilesDir().getAbsolutePath() + filePath;
+        }
+
+        init(new IssueHandlerConfiguration(serverUrl, ignoreMode, resultFilePath));
     }
 
     /**
@@ -85,7 +88,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
      * @param activity
      */
     public static void onActivityCreate(Activity activity) {
-        if(isApplicationDebuggable(activity) || CONFIGURATION.ignoreMode) {
+        if(isApplicationDebuggable(activity) || CONFIGURATION.mIgnoreMode) {
 
             INSTANCE.mActivity = activity;
 
@@ -219,19 +222,12 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
         private String mServerUrl;
         private String mFileUrl;
-        private boolean ignoreMode = false;
+        private boolean mIgnoreMode = false;
 
-        IssueHandlerConfiguration(IssueHandlerSetup issueHandlerSetup) {
-            mServerUrl = issueHandlerSetup.serverUrl();
-            mFileUrl = issueHandlerSetup.filePath();
-            ignoreMode = issueHandlerSetup.ignoreMode();
-        }
-
-        IssueHandlerConfiguration(IssueHandlerSetup issueHandlerSetup, String filePath) {
-            this(issueHandlerSetup);
-
-            if(!TextUtils.isEmpty(filePath))
-                mFileUrl = filePath;
+        IssueHandlerConfiguration(String serverUrl, boolean ignoreMode, String filePath) {
+            mServerUrl = serverUrl;
+            mIgnoreMode = ignoreMode;
+            mFileUrl = filePath;
         }
     }
 
