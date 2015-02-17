@@ -10,7 +10,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -19,18 +18,14 @@ import android.util.Log;
  */
 public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
-    private static final String LOG_TAG = "IssueHandler";
-
     private static final String ISSUE_BOT_PACKAGE_NAME = "com.busylee.issuebot";
-    private static final String FILTER_ACTION = "com.busylee.issuebot.redmine.issue";
-    public static final String EXTRA_SERVER_URL = "EXTRA_SERVER_URL";
-    public static final String EXTRA_FILE_PATH = "EXTRA_FILE_PATH";
-    public static final String EXTRA_THROWABLE = "EXTRA_THROWABLE";
+
+    private static final String LOG_TAG = "IssueHandler";
 
     private static IssueHandler INSTANCE = new IssueHandler();
     private static IssueHandlerConfiguration CONFIGURATION;
 
-    private Activity mActivity;
+    private Application mApplication;
 
     /**
      * Initialization of IssueHandler. It if Application class has no @IssueHandlerSetup
@@ -58,6 +53,23 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
             Log.e(LOG_TAG,
                     "Issue handler missed annotation @IssueHandlerSetup");
             return;
+        }
+
+        INSTANCE.mApplication = application;
+
+        if(isApplicationDebuggable(application) || CONFIGURATION.mIgnoreMode) {
+
+//            INSTANCE.mActivity = activity;
+
+            if (Thread.getDefaultUncaughtExceptionHandler() instanceof IssueHandler)
+                return;
+
+            Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
+
+//            if(!isIssueBotInstalled(application)) {
+//                showIssueBotInstallDialog(activity);
+//                return;
+//            }
         }
 
         final String serverUrl = issueHandlerSetup.serverUrl();
@@ -90,7 +102,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
     public static void onActivityCreate(Activity activity) {
         if(isApplicationDebuggable(activity) || CONFIGURATION.mIgnoreMode) {
 
-            INSTANCE.mActivity = activity;
+//            INSTANCE.mActivity = activity;
 
             if (Thread.getDefaultUncaughtExceptionHandler() instanceof IssueHandler)
                 return;
@@ -120,47 +132,49 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
      */
     @Override
     public void uncaughtException(Thread thread, final Throwable throwable) {
+        Intent intent = new Intent(mApplication, IssueHandlerActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |   Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mApplication.startActivity(intent);
 
-
-        (new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Looper.prepare();
-
-				if(!isIssueBotInstalled(mActivity)) {
-					showIssueBotInstallDialog(mActivity);
-				} else {
-					AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-					builder.setTitle(R.string.issue_dialog_title);
-					builder.setMessage(R.string.issue_dialog_message);
-					builder.create();
-					builder.setPositiveButton(R.string.issue_dialog_positive_button, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i) {
-							Intent intent = new Intent(FILTER_ACTION);
-							intent.putExtra(EXTRA_SERVER_URL, CONFIGURATION.mServerUrl);
-							intent.putExtra(EXTRA_THROWABLE, throwable);
-							if(!TextUtils.isEmpty(CONFIGURATION.mFileUrl))
-								intent.putExtra(EXTRA_FILE_PATH, CONFIGURATION.mFileUrl);
-							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-							mActivity.startActivity(intent);
-							mActivity.moveTaskToBack(true);
-							System.exit(0);
-						}
-					});
-					builder.setNegativeButton(R.string.issue_dialog_negative_button, new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i) {
-							mActivity.moveTaskToBack(true);
-							System.exit(0);
-						}
-					});
-					builder.show();
-				}
-
-                Looper.loop();
-            }
-        })).start();
+//        (new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Looper.prepare();
+//
+//				if(!isIssueBotInstalled(mActivity)) {
+//					showIssueBotInstallDialog(mActivity);
+//				} else {
+//					AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+//					builder.setTitle(R.string.issue_dialog_title);
+//					builder.setMessage(R.string.issue_dialog_message);
+//					builder.create();
+//					builder.setPositiveButton(R.string.issue_dialog_positive_button, new DialogInterface.OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialogInterface, int i) {
+//							Intent intent = new Intent(FILTER_ACTION);
+//							intent.putExtra(EXTRA_SERVER_URL, CONFIGURATION.mServerUrl);
+//							intent.putExtra(EXTRA_THROWABLE, throwable);
+//							if(!TextUtils.isEmpty(CONFIGURATION.mFileUrl))
+//								intent.putExtra(EXTRA_FILE_PATH, CONFIGURATION.mFileUrl);
+//							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//							mActivity.startActivity(intent);
+//							mActivity.moveTaskToBack(true);
+//							System.exit(0);
+//						}
+//					});
+//					builder.setNegativeButton(R.string.issue_dialog_negative_button, new DialogInterface.OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialogInterface, int i) {
+//							mActivity.moveTaskToBack(true);
+//							System.exit(0);
+//						}
+//					});
+//					builder.show();
+//				}
+//
+//                Looper.loop();
+//            }
+//        })).start();
     }
 
     /**
