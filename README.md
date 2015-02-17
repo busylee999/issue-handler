@@ -40,6 +40,7 @@ Add external repository in build.gragle file in your gradle module folder uses t
     
 
 And add dependency:
+
     ...
     dependency {
     ...
