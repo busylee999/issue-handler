@@ -1,14 +1,11 @@
 # Review
 Android Library for handling uncaught exceptions and sending it to installed IssueBot (https://play.google.com/store/apps/details?id=com.busylee.issuebot) program for posing to bug-trackers. The challenge of using this library it is simplify to store bug issues of your developing Android projects 
 
-Note: yet this is beta version.
-
 Features:
 
 1. Handling uncaugth exceptions and posting it to preinstalled IssueBot Android Application on phone your app running for posting it to bug-tracker system IssueBot supports.
 2. Installing IssueBot if it is not on the phone.
 3. Automatic attaching addition files you need to store for issue in bug tracker.
-
 
 ## Quick start
 
@@ -44,7 +41,7 @@ And add dependency:
     ...
     dependency {
     ...
-    compile 'com.busylee.issuehandler:issuehandler:1.0.6'
+    compile 'com.busylee.issuehandler:issuehandler:2.0.1'
     ...
     }
     ...
@@ -56,23 +53,33 @@ Using arr file:
 Simple download latest version of aar file from aar-files directory of this repository and add it as dependency for your project.
 
 ### Using in project:
-In your custom application class add IssueHandler init.
+In your custom application class add IssueHandler init in on create method. Issue handler lib now uses Application context for create intents for aware user about Exception.
 
-It has two different variants, using filePath or not.
+    public void onCreate() {
+        IssueHandler.init(this)
+    }
+    
+And add annotation for your Application class. This annotation defines library setting.
 
-    IssueHandler.init("your/redmine/server/path");
-    IssueHandler.init("your/redmine/server/path", "path/to/file/be/attached");
+    @IssueHandlerSetup(
+            serverUrl = "your/redmine/server/path"
+            filePath = "/path/to/file/from/application/private/directory"
+    )
+
+If file path is specified in @IssueHandlerSetup annotation, assumed that file located in application private directory. This file must be marked as readable for another application.
+File location is not a required parameter. If your file location is constant specify it in annotation, otherwise you can ommit filePath definition in annotation and specify it in init method
+
+    IssueHandler.init(this, "path/to/file/be/attached");
 
 Note: If you want to attach file for issue you need to specify file permissions as readable for everybody especially if you created it in application own directory.
 
-And in base activity class add callback method in onCreate()
-    
-    IssueHandler.onActivityCreate(this);
+## Versions
+Latest version in mvn repo is 2.0.1.
 
-## Latest version
-
-This is now just beta version. Latest version in mvn repo is 1.0.6.
-
+New in 2.0.1:
+- Removed dependency from activity. It is no matter now where Exception was occured.
+- Added IssueHandlerSetup annotation for simplifying setup of library.
+- Auto detection absolute path of file for attach, if it is specified in annotation.
 
 ## License
 
