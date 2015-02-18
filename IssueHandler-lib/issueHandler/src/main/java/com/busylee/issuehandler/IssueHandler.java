@@ -1,15 +1,11 @@
 package com.busylee.issuehandler;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Application;
+import android.app.*;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -18,14 +14,15 @@ import android.util.Log;
  */
 public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
-    private static final String ISSUE_BOT_PACKAGE_NAME = "com.busylee.issuebot";
+	public static final String ISSUE_BOT_PACKAGE_NAME = "com.busylee.issuebot";
 
     private static final String LOG_TAG = "IssueHandler";
+	private static final int ALARM_DELAY = 500; //500ms
 
     private static IssueHandler INSTANCE = new IssueHandler();
     private static IssueHandlerConfiguration CONFIGURATION;
 
-    private Application mApplication;
+    private Application mContext;
 
     /**
      * Initialization of IssueHandler. It if Application class has no @IssueHandlerSetup
@@ -44,6 +41,8 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
      * It stores file location, which will be attached to issue, if exception will occur.
      * Param filePath passed into function overrides filePath specified in @IssueHandlerSetup
      * annotation
+	 * Check if IssueBot application is installed then set instance of handler as
+	 * default uncaught exception handler, otherwise show dialog for install IssueBot app.
      * @param application
      * @param filePath file path to file will be attached to issue
      */
@@ -55,36 +54,36 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
             return;
         }
 
-        INSTANCE.mApplication = application;
-
         if(isApplicationDebuggable(application) || CONFIGURATION.mIgnoreMode) {
-
-//            INSTANCE.mActivity = activity;
 
             if (Thread.getDefaultUncaughtExceptionHandler() instanceof IssueHandler)
                 return;
 
-            Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
+            if(!isIssueBotInstalled(application))
+                showIssueBotInstallDialog(application);
 
-//            if(!isIssueBotInstalled(application)) {
-//                showIssueBotInstallDialog(activity);
-//                return;
-//            }
-        }
+			INSTANCE.mContext = application;
 
-        final String serverUrl = issueHandlerSetup.serverUrl();
-        final boolean ignoreMode = issueHandlerSetup.ignoreMode();
+			final String serverUrl = issueHandlerSetup.serverUrl();
+			final boolean ignoreMode = issueHandlerSetup.ignoreMode();
 
-        String resultFilePath = null;
-        if(!TextUtils.isEmpty(filePath)) {
-            resultFilePath = filePath;
+			String resultFilePath = null;
+			if(!TextUtils.isEmpty(filePath)) {
+				resultFilePath = filePath;
+			} else {
+				String filePathSetup = issueHandlerSetup.filePath();
+				if(!TextUtils.isEmpty(filePathSetup))
+					resultFilePath = application.getFilesDir().getAbsolutePath() + filePathSetup;
+			}
+
+			init(new IssueHandlerConfiguration(serverUrl, ignoreMode, resultFilePath));
+
+			Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
         } else {
-            String filePathSetup = issueHandlerSetup.filePath();
-            if(!TextUtils.isEmpty(filePathSetup))
-                resultFilePath = application.getFilesDir().getAbsolutePath() + filePathSetup;
-        }
+			Log.i(LOG_TAG,
+					"Application not in debug mode");
+		}
 
-        init(new IssueHandlerConfiguration(serverUrl, ignoreMode, resultFilePath));
     }
 
     /**
@@ -96,27 +95,6 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
     }
 
     /**
-     * Callback for handling new activity appearing. Dialog require Activity context for showing.
-     * @param activity
-     */
-    public static void onActivityCreate(Activity activity) {
-        if(isApplicationDebuggable(activity) || CONFIGURATION.mIgnoreMode) {
-
-//            INSTANCE.mActivity = activity;
-
-            if (Thread.getDefaultUncaughtExceptionHandler() instanceof IssueHandler)
-                return;
-
-            Thread.setDefaultUncaughtExceptionHandler(INSTANCE);
-
-			if(!isIssueBotInstalled(activity)) {
-				showIssueBotInstallDialog(activity);
-				return;
-			}
-        }
-    }
-
-    /**
      * Check is application debuggable
      * @param context
      * @return
@@ -125,6 +103,9 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
         return (0 != (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE));
     }
 
+	private Context getContext() {
+		return mContext;
+	}
     /**
      * Catching exception and showing alert dialog to ask user if he wants to create issue.
      * @param thread
@@ -132,86 +113,46 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
      */
     @Override
     public void uncaughtException(Thread thread, final Throwable throwable) {
-        Intent intent = new Intent(mApplication, IssueHandlerActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |   Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mApplication.startActivity(intent);
 
-//        (new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                Looper.prepare();
-//
-//				if(!isIssueBotInstalled(mActivity)) {
-//					showIssueBotInstallDialog(mActivity);
-//				} else {
-//					AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-//					builder.setTitle(R.string.issue_dialog_title);
-//					builder.setMessage(R.string.issue_dialog_message);
-//					builder.create();
-//					builder.setPositiveButton(R.string.issue_dialog_positive_button, new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialogInterface, int i) {
-//							Intent intent = new Intent(FILTER_ACTION);
-//							intent.putExtra(EXTRA_SERVER_URL, CONFIGURATION.mServerUrl);
-//							intent.putExtra(EXTRA_THROWABLE, throwable);
-//							if(!TextUtils.isEmpty(CONFIGURATION.mFileUrl))
-//								intent.putExtra(EXTRA_FILE_PATH, CONFIGURATION.mFileUrl);
-//							intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//							mActivity.startActivity(intent);
-//							mActivity.moveTaskToBack(true);
-//							System.exit(0);
-//						}
-//					});
-//					builder.setNegativeButton(R.string.issue_dialog_negative_button, new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialogInterface, int i) {
-//							mActivity.moveTaskToBack(true);
-//							System.exit(0);
-//						}
-//					});
-//					builder.show();
-//				}
-//
-//                Looper.loop();
-//            }
-//        })).start();
+		Intent crashedIntent = new Intent(getContext(), IssueHandlerActivity.class);
+		crashedIntent.setAction(IssueHandlerActivity.ACTION_ISSUE);
+		crashedIntent.putExtra(IssueHandlerActivity.EXTRA_SERVER_URL, CONFIGURATION.mServerUrl);
+		crashedIntent.putExtra(IssueHandlerActivity.EXTRA_THROWABLE, throwable);
+		if(!TextUtils.isEmpty(CONFIGURATION.mFileUrl))
+			crashedIntent.putExtra(IssueHandlerActivity.EXTRA_FILE_PATH, CONFIGURATION.mFileUrl);
+
+		crashedIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+		crashedIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		crashedIntent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+
+		PendingIntent intent = PendingIntent.getActivity(getContext(), 0, crashedIntent, crashedIntent.getFlags());
+		AlarmManager mgr = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+		mgr.set(AlarmManager.RTC, System.currentTimeMillis() + ALARM_DELAY, intent);
+
+		System.exit(0);
     }
 
     /**
      * Showing information dialog, that this application uses Issue Bot application for posting
      * issues to bug tracker. Asking user if he wants to install it from google play.
-     * @param activity
+     * @param context
      */
-    private static void showIssueBotInstallDialog(final Activity activity) {
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-        alertDialogBuilder.setMessage(R.string.issuebot_not_installed_dialog_message);
+    private static void showIssueBotInstallDialog(final Context context) {
+		Intent issueBotInstallIntent = new Intent(context, IssueHandlerActivity.class);
+		issueBotInstallIntent.setAction(IssueHandlerActivity.ACTION_BOT_APPLICATION);
 
-        alertDialogBuilder.setPositiveButton(R.string.issuebot_not_installed_dialog_positive_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("market://details?id=" + ISSUE_BOT_PACKAGE_NAME));
-                activity.startActivity(intent);
-            }
-        });
-
-        alertDialogBuilder.setNegativeButton(R.string.issuebot_not_installed_dialog_negative_button, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-            }
-        });
-
-        alertDialogBuilder.show();
+		PendingIntent intent = PendingIntent.getActivity(context, 0, issueBotInstallIntent, issueBotInstallIntent.getFlags());
+		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+		mgr.set(AlarmManager.RTC, System.currentTimeMillis() + ALARM_DELAY, intent);
     }
 
     /**
      * Checking for Issue Bot application is installed
-     * @param activity
+     * @param context
      * @return
      */
-    private static boolean isIssueBotInstalled(Activity activity) {
-        return checkPackageInstalled(activity, ISSUE_BOT_PACKAGE_NAME);
+    static boolean isIssueBotInstalled(Context context) {
+        return checkPackageInstalled(context, ISSUE_BOT_PACKAGE_NAME);
     }
 
     /**

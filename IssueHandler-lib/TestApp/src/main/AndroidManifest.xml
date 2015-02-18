@@ -17,10 +17,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.busylee.issuehandler.IssueHandlerActivity">
-
-        </activity>
-
     </application>
 
 </manifest>
