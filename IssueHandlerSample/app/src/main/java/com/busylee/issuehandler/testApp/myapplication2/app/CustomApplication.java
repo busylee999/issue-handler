@@ -9,7 +9,7 @@ import com.busylee.issuehandler.IssueHandlerSetup;
  */
 
 @IssueHandlerSetup(
-        serverUrl = "/your/redmine/server/url"
+        serverUrl = "http://tryremember.ru"
 )
 public class CustomApplication extends Application {
 
