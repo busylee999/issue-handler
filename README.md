@@ -12,7 +12,6 @@ Features:
 1. Add dependency for you project.
 2. Add init code in Application.
 3. Specify server url and file path
-4. Add callback in onCreate method for your base Activity class.
 
 You can look for sample project.
 
