@@ -7,9 +7,7 @@
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
@@ -19,7 +17,10 @@
       <header>
         <h1>IssueHandler</h1>
         <p>Android Library for handling uncaught exceptions and sending it to installed IssueBot program for posing to bug-trackers.</p>
+
         <p class="view"><a href="https://github.com/busylee999/issue-handler">View the Project on GitHub <small>busylee999/issue-handler</small></a></p>
+
+
         <ul>
           <li><a href="https://github.com/busylee999/issue-handler/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/busylee999/issue-handler/tarball/master">Download <strong>TAR Ball</strong></a></li>
@@ -31,8 +32,6 @@
 <a id="review" class="anchor" href="#review" aria-hidden="true"><span class="octicon octicon-link"></span></a>Review</h1>
 
 <p>Android Library for handling uncaught exceptions and sending it to installed IssueBot (<a href="https://play.google.com/store/apps/details?id=com.busylee.issuebot">https://play.google.com/store/apps/details?id=com.busylee.issuebot</a>) program for posing to bug-trackers. The challenge of using this library it is simplify to store bug issues of your developing Android projects </p>
-
-<p>Note: yet this is beta version.</p>
 
 <p>Features:</p>
 
@@ -75,14 +74,16 @@ android {
 ...
 </code></pre>
 
-<p>And add dependency:
-    ...
-    dependency {
-    ...
-    compile 'com.busylee.issuehandler:issuehandler:1.0.6'
-    ...
-    }
-    ...</p>
+<p>And add dependency:</p>
+
+<pre><code>...
+dependency {
+...
+compile 'com.busylee.issuehandler:issuehandler:2.0.1'
+...
+}
+...
+</code></pre>
 
 <p>This is preffered approach. But it is suitable only if you have internet connection.</p>
 
@@ -93,25 +94,41 @@ android {
 <h3>
 <a id="using-in-project" class="anchor" href="#using-in-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using in project:</h3>
 
-<p>In your custom application class add IssueHandler init.</p>
+<p>In your custom application class add IssueHandler init in on create method. Issue handler lib now uses Application context for create intents for aware user about Exception.</p>
 
-<p>It has two different variants, using filePath or not.</p>
+<pre><code>public void onCreate() {
+    IssueHandler.init(this)
+}
+</code></pre>
 
-<pre><code>IssueHandler.init("your/redmine/server/path");
-IssueHandler.init("your/redmine/server/path", "path/to/file/be/attached");
+<p>And add annotation for your Application class. This annotation defines library setting.</p>
+
+<pre><code>@IssueHandlerSetup(
+        serverUrl = "your/redmine/server/path"
+        filePath = "/path/to/file/from/application/private/directory"
+)
+</code></pre>
+
+<p>If file path is specified in @IssueHandlerSetup annotation, assumed that file located in application private directory. This file must be marked as readable for another application.
+File location is not a required parameter. If your file location is constant specify it in annotation, otherwise you can ommit filePath definition in annotation and specify it in init method</p>
+
+<pre><code>IssueHandler.init(this, "path/to/file/be/attached");
 </code></pre>
 
 <p>Note: If you want to attach file for issue you need to specify file permissions as readable for everybody especially if you created it in application own directory.</p>
 
-<p>And in base activity class add callback method in onCreate()</p>
-
-<pre><code>IssueHandler.onActivityCreate(this);
-</code></pre>
-
 <h2>
-<a id="latest-version" class="anchor" href="#latest-version" aria-hidden="true"><span class="octicon octicon-link"></span></a>Latest version</h2>
+<a id="versions" class="anchor" href="#versions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Versions</h2>
 
-<p>This is now just beta version. Latest version in mvn repo is 1.0.6.</p>
+<p>Latest version in mvn repo is 2.0.1.</p>
+
+<p>New in 2.0.1:</p>
+
+<ul>
+<li>Removed dependency from activity. It is no matter now where Exception was occured.</li>
+<li>Added IssueHandlerSetup annotation for simplifying setup of library.</li>
+<li>Auto detection absolute path of file for attach, if it is specified in annotation.</li>
+</ul>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
@@ -131,12 +148,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 </code></pre>
       </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/busylee999">busylee999</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/busylee999">busylee999</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
               <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
