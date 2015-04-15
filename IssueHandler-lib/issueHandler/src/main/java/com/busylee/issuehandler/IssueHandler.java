@@ -19,10 +19,14 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
     private static final String LOG_TAG = "IssueHandler";
 	private static final int ALARM_DELAY = 500; //500ms
 
+    //todo just for hotfix
+    private static final int ALARM_DELAY_ISSUE_BOT_INSTALL_DIALOG = 2000; //2000ms
+
     private static IssueHandler INSTANCE = new IssueHandler();
     private static IssueHandlerConfiguration CONFIGURATION;
 
     private Application mContext;
+    private ThrowableCallback mThrowableCallback;
 
     /**
      * Initialization of IssueHandler. It if Application class has no @IssueHandlerSetup
@@ -95,6 +99,15 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
     }
 
     /**
+     * Setting exception callback, it is usefull to store any data into your file log for example or check consistent of
+     * your program time model
+     * @param throwableCallback
+     */
+    public static void setCallback(ThrowableCallback throwableCallback) {
+        INSTANCE.mThrowableCallback = throwableCallback;
+    }
+
+    /**
      * Check is application debuggable
      * @param context
      * @return
@@ -113,6 +126,12 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
      */
     @Override
     public void uncaughtException(Thread thread, final Throwable throwable) {
+
+        // get user ability to do some action
+        if(mThrowableCallback != null)
+            try {
+                mThrowableCallback.onThrowable(throwable);
+            } catch (Exception ignore) {}
 
 		Intent crashedIntent = new Intent(getContext(), IssueHandlerActivity.class);
 		crashedIntent.setAction(IssueHandlerActivity.ACTION_ISSUE);
@@ -143,7 +162,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
 
 		PendingIntent intent = PendingIntent.getActivity(context, 0, issueBotInstallIntent, issueBotInstallIntent.getFlags());
 		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		mgr.set(AlarmManager.RTC, System.currentTimeMillis() + ALARM_DELAY, intent);
+		mgr.set(AlarmManager.RTC, System.currentTimeMillis() + ALARM_DELAY_ISSUE_BOT_INSTALL_DIALOG, intent);
     }
 
     /**
@@ -186,4 +205,7 @@ public class IssueHandler implements Thread.UncaughtExceptionHandler{
         }
     }
 
+    public interface ThrowableCallback {
+        void onThrowable(Throwable e);
+    }
 }
