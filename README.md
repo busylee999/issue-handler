@@ -40,7 +40,7 @@ And add dependency:
     ...
     dependency {
     ...
-    compile 'com.busylee.issuehandler:issuehandler:2.0.1'
+    compile 'com.busylee.issuehandler:issuehandler:2.0.5'
     ...
     }
     ...
@@ -73,7 +73,11 @@ File location is not a required parameter. If your file location is constant spe
 Note: If you want to attach file for issue you need to specify file permissions as readable for everybody especially if you created it in application own directory.
 
 ## Versions
-Latest version in mvn repo is 2.0.1.
+Latest version in mvn repo is 2.0.5.
+
+New in 2.0.5:
+- Increased install Issue Bot dialog showing timeout
+- Added callback on throawble occuring
 
 New in 2.0.1:
 - Removed dependency from activity. It is no matter now where Exception was occured.
